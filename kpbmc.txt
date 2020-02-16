@@ -1,0 +1,61 @@
+# https://www.kallistobus.tools/velocity_tutorial.html
+# https://github.com/BUStools/getting_started/blob/master/kallisto_bus_mouse_nuclei_tutorial.ipynb
+
+#download the human cDNA+intron index
+cd /PATH/TO/singlenuclei/
+wget https://github.com/BUStools/getting_started/releases/download/velocity_tutorial/cDNA.correct_header.fa.gz
+wget https://github.com/BUStools/getting_started/releases/download/velocity_tutorial/introns.correct_header.fa.gz
+wget https://github.com/BUStools/getting_started/releases/download/velocity_tutorial/cDNA_transcripts.to_capture.txt.gz
+wget https://github.com/BUStools/getting_started/releases/download/velocity_tutorial/introns_transcripts.to_capture.txt.gz
+wget https://github.com/BUStools/getting_started/releases/download/velocity_tutorial/cDNA_introns.t2g.txt.gz
+
+gunzip *
+cat cDNA.correct_header.fa introns.correct_header.fa > cDNA_introns.fa
+/PATH/TO/kallisto_0.46.1/kallisto/kallisto index -i cDNA_introns.idx -k 31 cDNA_introns.fa
+
+cd /PATH/TO/pbmc3kv1/fastqs
+/PATH/TO/kallisto_0.46.1/kallisto/kallisto bus -i /PATH/TO/kallisto_index/cDNA_introns.idx \
+-o /PATH/TO/pbmc3kv1/k_whole/bus_output -x 10xv1 -t 2 \
+./read-RA_si-CGCTATCC_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-CGCTATCC_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-CGCTATCC_lane-001-chunk-001.fastq \
+./read-RA_si-TAAATCGT_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-TAAATCGT_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-TAAATCGT_lane-001-chunk-001.fastq \
+./read-RA_si-GTTGCATG_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-GTTGCATG_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-GTTGCATG_lane-001-chunk-001.fastq \
+./read-RA_si-ACGCGGAA_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-ACGCGGAA_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-ACGCGGAA_lane-001-chunk-001.fastq \
+./read-RA_si-TAAATCGT_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-TAAATCGT_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-TAAATCGT_lane-002-chunk-000.fastq \
+./read-RA_si-ACGCGGAA_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-ACGCGGAA_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-ACGCGGAA_lane-002-chunk-000.fastq \
+./read-RA_si-GTTGCATG_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-GTTGCATG_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-GTTGCATG_lane-002-chunk-000.fastq \
+./read-RA_si-CGCTATCC_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-CGCTATCC_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-CGCTATCC_lane-002-chunk-000.fastq
+
+/PATH/TO/bustools393/bustools/bustools correct \
+-w /PATH/TO/cellranger-3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/737K-april-2014_rc.txt \
+-o bus_output/output.correct.bus bus_output/output.bus
+
+/PATH/TO/bustools393/bustools/bustools sort -o bus_output/output.correct.sort.bus \
+-t 4 bus_output/output.bus
+
+/PATH/TO/bustools393/bustools/bustools capture -s -o bus_output/cDNA_capture/cDNA_capture.bus \
+-c cDNA_transcripts.to_capture.txt \
+-e bus_output/matrix.ec -t bus_output/transcripts.txt bus_output/output.correct.sort.bus
+
+/PATH/TO/bustools393/bustools/bustools capture -s -o bus_output/intron_capture/intron_capture.bus -c introns_transcripts.to_capture.txt -e bus_output/matrix.ec -t bus_output/transcripts.txt bus_output/output.correct.sort.bus
+
+/PATH/TO/bustools393/bustools/bustools count -o bus_output/unspliced/unspliced \
+-g cDNA_introns.t2g.txt -e bus_output/matrix.ec -t bus_output/transcripts.txt --genecounts bus_output/cDNA_capture/cDNA_capture.bus
+
+/PATH/TO/bustools393/bustools/bustools count -o bus_output/spliced/spliced \
+-g cDNA_introns.t2g.txt -e bus_output/matrix.ec -t bus_output/transcripts.txt --genecounts bus_output/intron_capture/intron_capture.bus

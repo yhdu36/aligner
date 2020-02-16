@@ -1,0 +1,39 @@
+# https://www.kallistobus.tools/velocity_tutorial.html
+# https://github.com/BUStools/getting_started/blob/master/kallisto_bus_mouse_nuclei_tutorial.ipynb
+
+#download the mouse cDNA+intron index
+cd /PATH/TO/singlenuclei/
+wget https://github.com/pachterlab/MBGBLHGP_2019/releases/download/figure_3_files/cDNA_introns.correct_header.fa.gz
+wget https://github.com/pachterlab/MBGBLHGP_2019/releases/download/figure_3_files/cDNA_transcripts.to_capture.txt.gz
+wget https://github.com/pachterlab/MBGBLHGP_2019/releases/download/figure_3_files/introns_transcripts.to_capture.txt.gz
+wget https://github.com/pachterlab/MBGBLHGP_2019/releases/download/figure_3_files/cDNA_introns.t2g.txt.gz
+
+gunzip *
+/PATH/TO/kallisto_0.46.1/kallisto/kallisto index -i cDNA_introns.idx -k 31 cDNA_introns.correct_header.fa
+
+cd /PATH/TO/hca/mouse
+/PATH/TO/kallisto_0.46.1/kallisto/kallisto bus -i /PATH/TO/singlenuclei/cDNA_introns.idx \
+-o bus_output -x 10xv2 -t 1 \
+Cortex1.CCJ15ANXX.10X_2A.unmapped.1.fastq.gz Cortex1.CCJ15ANXX.10X_2A.unmapped.2.fastq.gz \
+Cortex1.CCJ15ANXX.10X_2B.unmapped.1.fastq.gz Cortex1.CCJ15ANXX.10X_2B.unmapped.2.fastq.gz \
+Cortex1.CCJ15ANXX.10X_2C.unmapped.1.fastq.gz Cortex1.CCJ15ANXX.10X_2C.unmapped.2.fastq.gz \
+Cortex1.CCJ15ANXX.10X_2D.unmapped.1.fastq.gz Cortex1.CCJ15ANXX.10X_2D.unmapped.2.fastq.gz
+
+/PATH/TO/bustools393/bustools/bustools correct \
+-w /PATH/TO/cellranger-3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/737K-april-2014_rc.txt \
+-o bus_output/output.correct.bus bus_output/output.bus
+
+/PATH/TO/bustools393/bustools/bustools sort -o bus_output/output.correct.sort.bus \
+-t 4 bus_output/output.bus
+
+/PATH/TO/bustools393/bustools/bustools capture -s -o bus_output/cDNA_capture/cDNA_capture.bus \
+-c cDNA_transcripts.to_capture.txt \
+-e bus_output/matrix.ec -t bus_output/transcripts.txt bus_output/output.correct.sort.bus
+
+/PATH/TO/bustools393/bustools/bustools capture -s -o bus_output/intron_capture/intron_capture.bus -c introns_transcripts.to_capture.txt -e bus_output/matrix.ec -t bus_output/transcripts.txt bus_output/output.correct.sort.bus
+
+/PATH/TO/bustools393/bustools/bustools count -o bus_output/unspliced/unspliced \
+-g cDNA_introns.t2g.txt -e bus_output/matrix.ec -t bus_output/transcripts.txt --genecounts bus_output/cDNA_capture/cDNA_capture.bus
+
+/PATH/TO/bustools393/bustools/bustools count -o bus_output/spliced/spliced \
+-g cDNA_introns.t2g.txt -e bus_output/matrix.ec -t bus_output/transcripts.txt --genecounts bus_output/intron_capture/intron_capture.bus

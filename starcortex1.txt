@@ -1,0 +1,35 @@
+/PATH/TO/STAR-2.7.3a/source/STAR --runThreadN 2 --runMode genomeGenerate \
+--genomeDir /PATH/TO/STAR-2.7.3a/Index/mouseindex49/ \
+--genomeFastaFiles /PATH/TO/singlenuclei/mouse_index/GRCm38.primary_assembly.genome.fa \
+--sjdbGTFfile /PATH/TO/singlenuclei/mouse_index/gencode.vM23.primary_assembly.annotation.gtf  \
+--sjdbOverhang 49
+
+cd /PATH/TO/hca/mouse
+
+/PATH/TO/STAR-2.7.3a/source/STAR \
+--runMode alignReads \
+--runThreadN 2 \
+--genomeDir /PATH/TO/STAR-2.7.3a/Index/mouseindex49 \
+--sjdbOverhang 49 \
+--readFilesIn \
+Cortex1.CCJ15ANXX.10X_2A.unmapped.2.fastq.gz,Cortex1.CCJ15ANXX.10X_2B.unmapped.2.fastq.gz,Cortex1.CCJ15ANXX.10X_2C.unmapped.2.fastq.gz,Cortex1.CCJ15ANXX.10X_2D.unmapped.2.fastq.gz \
+Cortex1.CCJ15ANXX.10X_2A.unmapped.1.fastq.gz,Cortex1.CCJ15ANXX.10X_2B.unmapped.1.fastq.gz,Cortex1.CCJ15ANXX.10X_2C.unmapped.1.fastq.gz,Cortex1.CCJ15ANXX.10X_2D.unmapped.1.fastq.gz \
+--readFilesCommand zcat \
+--outFileNamePrefix cortex1_ \
+--outSAMtype BAM SortedByCoordinate \
+--outSAMmode Full \
+--outSAMunmapped None \
+--soloType CB_UMI_Simple \
+--soloCBwhitelist /PATH/TO/singlenuclei/10xv2_whitelist.txt \
+--soloFeatures Gene SJ GeneFull \
+--soloUMIdedup 1MM_All \
+--soloCBstart 1 \
+--soloCBlen 16 \
+--soloUMIstart 17 \
+--soloUMIlen 10 \
+--soloBarcodeReadLength 0 \
+--soloOutFileNames Cortex_Solo.out/ cortex1_genes.tsv \
+cortex1_barcodes.tsv \
+cortex1_matrix.mtx \
+cortex1_matrixSJ.mtx \
+cortex1_matrixGeneFull.mtx
