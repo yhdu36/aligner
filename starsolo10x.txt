@@ -1,0 +1,36 @@
+Using lastes STAR version for STARsolo:
+https://github.com/alexdobin/STAR/archive/2.7.1a.tar.gz
+
+#PATH TO lastest STAR
+/PATH/TO/star2.7.1a/STAR-2.7.1a/source/STAR
+
+
+/PATH/TO/STAR2.7.1a/STAR-2.7.1a/source/STAR --runThreadN 4 --runMode genomeGenerate \
+--genomeDir /PATH/TO/STAR2.7.1a/Index/Index90/ \
+--genomeFastaFiles /PATH/TO/STAR/Sequence/Homo_sapiens.GRCh38.dna.primary_assembly.fa \
+--sjdbGTFfile /PATH/TO/STAR/Annotation/Homo_sapiens.GRCh38.95.gtf  \
+--sjdbOverhang 90
+
+
+
+STAR --runThreadN 4 --genomeDir /PATH/TO/STAR2.7.1a/Index/Index90/ \
+--readFilesIn read-RA_si-ACGCGGAA_lane-001-chunk-001.fastq-seq.fastq,read-RA_si-ACGCGGAA_lane-002-chunk-000.fastq-seq.fastq,read-RA_si-CGCTATCC_lane-001-chunk-001.fastq-seq.fastq,read-RA_si-CGCTATCC_lane-002-chunk-000.fastq-seq.fastq,read-RA_si-GTTGCATG_lane-001-chunk-001.fastq-seq.fastq,read-RA_si-GTTGCATG_lane-002-chunk-000.fastq-seq.fastq,read-RA_si-TAAATCGT_lane-001-chunk-001.fastq-seq.fastq,read-RA_si-TAAATCGT_lane-002-chunk-000.fastq-seq.fastq read-I1_si-ACGCGGAA_lane-001-chunk-001-CBUMI.fastq,read-I1_si-ACGCGGAA_lane-002-chunk-000-CBUMI.fastq,read-I1_si-CGCTATCC_lane-001-chunk-001-CBUMI.fastq,read-I1_si-CGCTATCC_lane-002-chunk-000-CBUMI.fastq,read-I1_si-GTTGCATG_lane-001-chunk-001-CBUMI.fastq,read-I1_si-GTTGCATG_lane-002-chunk-000-CBUMI.fastq,read-I1_si-TAAATCGT_lane-001-chunk-001-CBUMI.fastq,read-I1_si-TAAATCGT_lane-002-chunk-000-CBUMI.fastq \
+--outFileNamePrefix /PATH/TO/STAR2.7.1a/Output/pmbc3kv1/ \
+--soloType Droplet --soloCBstart 1 --soloCBlen 14 --soloUMIstart 15 --soloUMIlen 10 --soloUMIdefup 1MM_All \
+--soloCBwhitelist /PATH/TO/aligner10x/cellranger/cellranger-3.0.2/cellranger-cs/3.0.2/lib/python/cellranger/barcodes/737K-april-2014_rc.txt \
+--soloOutFileNames pbmcv3chem3.Solo.out/ genes.tsv barcodes.tsv matrix.mtx matrixSJ.mtx
+
+
+
+
+#STAR --runThreadN 4 --genomeDir /PATH/TO/STAR2.7.1a/Index/Index90/ \
+#--readFilesIn /PATH/TO/aligner10x/pbmc_1k_v3_fastqs/pbmc_1k_v3_S1_L001_R2_001.fastq,/PATH/TO/aligner10x/pbmc_1k_v3_fastqs/pbmc_1k_v3_S1_L002_R2_001.fastq \
+#/PATH/TO/aligner10x/pbmc_1k_v3_fastqs/pbmc_1k_v3_S1_L001_R2_001.fastq,/PATH/TO/aligner10x/pbmc_1k_v3_fastqs/pbmc_1k_v3_S1_L001_R1_001.fastq \
+#--outFileNamePrefix /PATH/TO/STAR2.7.1a/Output/pbmc1kv310x/ \
+#--soloType Droplet \
+#--soloCBwhitelist /path/to/whitelist.txt \
+#--soloCBstart 1 --soloCBlen 16 --soloUMIstart 17 \
+#--soloUMIlen 10 --soloUMIdefup 1MM_All \
+#--soloOutFileNames pbmcv3chem3.Solo.out/ genes.tsv barcodes.tsv matrix.mtx matrixSJ.mtx
+
+#/PATH/TO/aligner10x/cellranger/cellranger-3.0.2/cellranger-cs/3.0.2/lib/python/cellranger/barcodes/737K-april-2014_rc.txt

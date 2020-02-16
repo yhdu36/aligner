@@ -1,0 +1,107 @@
+java -jar $PICARD_JARS/picard.jar FastqToSam \
+F1=/PATH/TO/Rawdata_R1.fastq \
+F2=/PATH/TO/Rawdata_R1.fastq  \
+O=/PATH/TO/Unaligned_BAM_rawdata.bam \
+SM=cellline_batch_date \
+SORT_ORDER=queryname
+
+/PATH/TO/Drop-seq_tools-1.13/TagBamWithReadSequenceExtended \
+SUMMARY=/PATH/TO/Unaligned_BAM_rawdata_Cellular.bam_summary.txt \
+BASE_RANGE=1-12 \
+BASE_QUALITY=10 \
+BARCODED_READ=1 \
+DISCARD_READ=false \
+TAG_NAME=XC \
+NUM_BASES_BELOW_QUALITY=1 \
+OUTPUT=/PATH/TO/Unaligned_BAM_rawdata_Cellular.bam \
+INPUT=/PATH/TO/Unaligned_BAM_rawdata.bam
+
+/PATH/TO/Drop-seq_tools-1.13/TagBamWithReadSequenceExtended \
+SUMMARY=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular.bam_summary.txt \
+BASE_RANGE=13-20 \
+BASE_QUALITY=10 \
+BARCODED_READ=1 \
+DISCARD_READ=True \
+TAG_NAME=XM \
+NUM_BASES_BELOW_QUALITY=1 \
+OUTPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular.bam \
+INPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Cellular.bam
+
+/PATH/TO/dropseq/Drop-seq_tools-1.13/FilterBAM \
+TAG_REJECT=XQ \
+INPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular.bam \
+OUTPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular_filtered.bam
+
+/PATH/TO/dropseq/Drop-seq_tools-1.13/TrimStartingSequence \
+INPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular_filtered.bam \
+OUTPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular_trimmed_smart.bam \
+OUTPUT_SUMMARY=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular_trimming_report.txt \
+SEQUENCE=AAGCAGTGGTATCAACGCAGAGTGAATGGG \
+MISMATCHES=0 \
+NUM_BASES=5
+
+
+/PATH/TO/dropseq/Drop-seq_tools-1.13/PolyATrimmer \
+INPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_Molecular_trimmed_smart.bam \
+OUTPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_mc_tagged_polyA_filtered.bam \
+OUTPUT_SUMMARY=/PATH/TO/dropseq/finalversion/polyA_trimming_report.txt \
+MISMATCHES=0 \
+NUM_BASES=6
+
+
+java -Xmx4g -jar $PICARD_JARS/picard.jar SamToFastq \
+INPUT=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_mc_tagged_polyA_filtered.bam \
+FASTQ=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_mc_tagged_polyA_filtered.fastq
+
+
+STAR \
+--runThreadN 12 \
+--genomeDir /PATH/TO/STAR/Index/Index75 \
+--readFilesIn  /PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_mc_tagged_polyA_filtered.fastq \
+--outFileNamePrefix /PATH/TO/STAR/Outputfinal/
+
+
+java -Xmx4g -jar $PICARD_JARS/picard.jar SortSam \
+I=/PATH/TO/STAR/Outputfinal/Aligned.out.sam \
+O=/PATH/TO/dropseq/finalversion/starAligned.querysorted.bam \
+SO=queryname
+
+
+java -Xmx4g -jar $PICARD_JARS/picard.jar MergeBamAlignment \
+REFERENCE_SEQUENCE=/PATH/TO/STAR/Sequence/Homo_sapiens.GRCh38.dna.primary_assembly.fa \
+UNMAPPED_BAM=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_mc_tagged_polyA_filtered.bam \
+ALIGNED_BAM=/PATH/TO/dropseq/finalversion/starAligned.querysorted.bam \
+OUTPUT=/PATH/TO/dropseq/finalversion/star_merged.bam \
+INCLUDE_SECONDARY_ALIGNMENTS=false \
+PAIRED_RUN=false
+
+
+java -Xmx4g -jar $PICARD_JARS/picard.jar MergeBamAlignment \
+REFERENCE_SEQUENCE=/PATH/TO/STAR/Sequence/Homo_sapiens.GRCh38.dna.primary_assembly.fa \
+UNMAPPED_BAM=/PATH/TO/dropseq/finalversion/Unaligned_BAM_WM989Batch1_mc_tagged_polyA_filtered.bam \
+ALIGNED_BAM=/PATH/TO/dropseq/finalversion/starAligned.querysorted.bam \
+OUTPUT=/PATH/TO/dropseq/finalversion/star_merged.bam \
+INCLUDE_SECONDARY_ALIGNMENTS=false \
+PAIRED_RUN=false
+
+/PATH/TO/dropseq/Drop-seq_tools-1.13/TagReadWithGeneExon \
+I=/PATH/TO/dropseq/finalversion/star_merged.bam \
+O=/PATH/TO/dropseq/finalversion/star_gene_exon_tagged.bam \
+ANNOTATIONS_FILE=/PATH/TO/STAR/Annotation/Homo_sapiens.GRCh38.95.gtf TAG=GE
+
+
+/PATH/TO/dropseq/Drop-seq_tools-1.13/DetectBeadSynthesisErrors \
+I=/PATH/TO/dropseq/finalversion/star_gene_exon_tagged.bam \
+O=/PATH/TO/dropseq/finalversion/star_gene_exon_tagged_clean.bam \
+OUTPUT_STATS=/PATH/TO/dropseq/finalversion/star_correcting_stats.txt \
+SUMMARY=/PATH/TO/dropseq/finalversion/star_correcting_stats_summary.txt \
+NUM_BARCODES=20000 \
+PRIMER_SEQUENCE=AAGCAGTGGTATCAACGCAGAGTAC
+
+/PATH/TO/dropseq/Drop-seq_tools-1.13/DigitalExpression \
+I=/PATH/TO/dropseq/finalversion/star_gene_exon_tagged_clean.bam \
+O=/PATH/TO/dropseq/finalversion/star_gene_exon_tagged.dge.txt.gz \
+SUMMARY=/PATH/TO/dropseq/finalversion/star_gene_exon_tagged.dge.summary.txt \
+MIN_NUM_GENES_PER_CELL=10 \
+CELL_BC_FILE=/PATH/TO/selectDropseqBarcodes.txt \
+TMP_DIR= /PATH/TO/temp

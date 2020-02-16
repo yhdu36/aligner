@@ -1,0 +1,11 @@
+for i in /PATH/TO/trimmed/*.fastq; do
+STAR \
+--runThreadN 1 \
+--genomeDir /Index/Index75 \
+--readFilesIn  "${i}" \
+--outFileNamePrefix /STAR/output/"${i%.fastq}"/
+done
+
+for i in *.sam; do
+featureCounts -pPBCM --primary -T 3 -O -a /Homo_sapiens.GRCh38.95.gtf -o /"${i%.sortedByCoord.out.bam}".txt /featurecount_star/"${i}"
+done

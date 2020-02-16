@@ -1,0 +1,42 @@
+Aligner Comparsion project code summary
+
+Part I: Drop-seq data
+(i)STAR
+*Requires: Drop-seq_tools-1.13, picard, samtools, STAR
+see dropseq-star.sh
+
+(ii)Kallisto
+*Requires: Drop-seq_tools-1.13, picard, samtools, Kallisto
+see dropseq-kallisto.sh
+
+Part II: Fluidigm data
+(i) STAR
+*Requires: fastq, cutadapt, trimalore, STAR, subread
+1. obtain the demultiplexed fastqs, see fluidigm_trim.sh
+2. see fluidigm_star.sh
+
+(ii) Kallisto
+*Requires: fastqc, cutadapt, trimaglore, STAR, subread
+1. obtain the demultiplexed fastqs, see fluidigm_trim.sh
+2. see fluidigm_kallisto.sh
+
+(iii)
+Combine individual feature count output, and reformat to count matrix
+awk '{print FILENAME"\t"$0}' *.txt |grep -v Geneid > /tmp.txt
+For STAR: see transform.r
+For Kallisto: see transform_kallisto.r
+
+Part III: 10x data
+(i) STAR
+see starsolo10x.sh
+(ii) Kallisto
+see kbus10x.sh
+see Generate_matrix.py
+(iii) Seurat 
+see pbmc3k_seurat.R
+
+Part IV: Analysis
+see aligners.R
+
+
+

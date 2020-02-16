@@ -1,0 +1,6 @@
+module load fastqc/0.10.1
+module load cutadapt/1.10
+module load trimgalore/0.4.2
+for i in /PATH/TO/*.fastq; do
+trim_galore --nextera -o /OUTPUT/PATH/ ${i}
+done

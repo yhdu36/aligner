@@ -1,0 +1,29 @@
+
+cd /pbmc_3k_v1.1/pbmc3k_fastqs
+/kallisto bus \
+-i /hg38_95_k31.idx  \
+-o /pbmc_3k_v1.1/kallistobus/ -x 10xv1 -t 2 \
+./read-RA_si-CGCTATCC_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-CGCTATCC_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-CGCTATCC_lane-001-chunk-001.fastq \
+./read-RA_si-TAAATCGT_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-TAAATCGT_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-TAAATCGT_lane-001-chunk-001.fastq \
+./read-RA_si-GTTGCATG_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-GTTGCATG_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-GTTGCATG_lane-001-chunk-001.fastq \
+./read-RA_si-ACGCGGAA_lane-001-chunk-001.fastq-seq.fastq \
+./read-RA_si-ACGCGGAA_lane-001-chunk-001.fastq-umi.fastq \
+./read-I1_si-ACGCGGAA_lane-001-chunk-001.fastq \
+./read-RA_si-TAAATCGT_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-TAAATCGT_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-TAAATCGT_lane-002-chunk-000.fastq \
+./read-RA_si-ACGCGGAA_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-ACGCGGAA_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-ACGCGGAA_lane-002-chunk-000.fastq \
+./read-RA_si-GTTGCATG_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-GTTGCATG_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-GTTGCATG_lane-002-chunk-000.fastq \
+./read-RA_si-CGCTATCC_lane-002-chunk-000.fastq-seq.fastq \
+./read-RA_si-CGCTATCC_lane-002-chunk-000.fastq-umi.fastq \
+./read-I1_si-CGCTATCC_lane-002-chunk-000.fastq
